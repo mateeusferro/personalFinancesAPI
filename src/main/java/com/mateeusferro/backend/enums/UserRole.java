@@ -1,7 +1,6 @@
 package com.mateeusferro.backend.enums;
 
 public enum UserRole {
-
     ADMIN("ADMIN"),
     USER("USER");
 
