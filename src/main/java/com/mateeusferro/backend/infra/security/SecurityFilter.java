@@ -1,11 +1,14 @@
 package com.mateeusferro.backend.infra.security;
 
+import com.mateeusferro.backend.exceptions.TokenNullException;
 import com.mateeusferro.backend.repositories.UsersRepository;
+import com.mateeusferro.backend.utils.Blacklist;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,8 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
+    Blacklist blacklist;
+    @Autowired
     TokenService tokenService;
 
     @Autowired
@@ -26,14 +31,15 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = recoverToken(request);
-        if(token != null){
+        if(token != null && !blacklist.isTokenBlacklisted(token)){
             var email = tokenService.validateToken(token);
-            UserDetails user = usersRepository.findByEmail(email);
 
+            UserDetails user = usersRepository.findByEmail(email);
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         filterChain.doFilter(request, response);
     }
 
