@@ -1,6 +1,7 @@
 package com.mateeusferro.backend.services;
 
 import com.mateeusferro.backend.dtos.UsersDTO;
+import com.mateeusferro.backend.enums.UserRole;
 import com.mateeusferro.backend.exceptions.UserAlreadyExistsException;
 import com.mateeusferro.backend.models.Users;
 import com.mateeusferro.backend.repositories.UsersRepository;
@@ -19,7 +20,8 @@ public class UsersService {
             throw new UserAlreadyExistsException("This email already exists");
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(usersDTO.password());
-        Users newUser = new Users(usersDTO.name(), usersDTO.name(), usersDTO.password());
+
+        Users newUser = new Users(usersDTO.name(), usersDTO.email(), encryptedPassword, "user");
 
         this.usersRepository.save(newUser);
     }
