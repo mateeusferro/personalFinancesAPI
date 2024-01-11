@@ -2,6 +2,9 @@ package com.mateeusferro.backend.models;
 
 import com.mateeusferro.backend.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,29 +27,35 @@ public class Users implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, max = 45, message = "Name must be between 2 and 255 characters")
     @Column(name = "name")
     private String name;
 
+    @NotBlank(message = "Email cannot be blank")
+    @Size(max = 255, message = "Email must be the max of 255 characters")
     @Column(name = "email")
     private String email;
 
+    @NotBlank(message = "Password cannot be blank")
     @Column(name = "password")
     private String password;
 
     @Column(name = "is_admin")
-    private UserRole isAdmin;
+    private String isAdmin;
 
-    public Users(String name, String email, String password) {
+    public Users(String name, String email, String password, String isAdmin) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.isAdmin = UserRole.USER;
+        this.isAdmin = isAdmin;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       if(this.isAdmin == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-       else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if(this.isAdmin == "user") return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        else return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+
     }
 
     @Override
@@ -66,7 +75,7 @@ public class Users implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
