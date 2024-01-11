@@ -1,5 +1,6 @@
 package com.mateeusferro.backend.advice;
 
+import com.mateeusferro.backend.exceptions.TokenNullException;
 import com.mateeusferro.backend.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -67,9 +68,27 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(TokenNullException.class)
+    public ProblemDetail handleTokenNull(TokenNullException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ProblemDetail handleNullPointer(NullPointerException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return problemDetail;
+    }
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFound(NoResourceFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleException(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         return problemDetail;
     }
 
