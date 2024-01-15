@@ -1,8 +1,6 @@
 package com.mateeusferro.backend.controllers;
 
-import com.mateeusferro.backend.dtos.AuthenticationDTO;
-import com.mateeusferro.backend.dtos.LoginResponseDTO;
-import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.*;
 import com.mateeusferro.backend.exceptions.TokenNullException;
 import com.mateeusferro.backend.infra.security.TokenService;
 import com.mateeusferro.backend.models.Users;
@@ -42,9 +40,30 @@ public class AuthenticationController {
                 authenticationDTO.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((Users) auth.getPrincipal());
+        var token = tokenService.generateTokens((Users) auth.getPrincipal());
         return ResponseEntity.status(HttpStatus.OK).
-                body(new LoginResponseDTO("You're logged",token, HttpStatus.OK));
+                body(new LoginResponseDTO("You're logged", token.accessToken(),
+                        token.refreshToken(), HttpStatus.OK));
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity refreshToken(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO,
+                                       @RequestHeader("Authorization") String authorizationHeader ){
+        String token = extractTokenFromAuthorizationHeader(authorizationHeader);
+        final String refreshToken;
+        final String userEmail = tokenService.extractUsername(refreshTokenDTO.refreshToken());
+        if (userEmail != null) {
+            var user = this.usersRepository.findByEmail(userEmail);
+            if (tokenService.isTokenValid(refreshTokenDTO.refreshToken(), user)) {
+                var accessToken = tokenService.generateTokens((Users) user);
+                blacklist.addToBlacklist(token);
+                blacklist.addToBlacklist(refreshTokenDTO.refreshToken());
+                return ResponseEntity.status(HttpStatus.OK).
+                        body(new LoginResponseDTO("You're logged again", accessToken.accessToken(),
+                                accessToken.refreshToken(), HttpStatus.OK));
+            }
+        }
+        throw new RuntimeException("Something went wrong");
     }
 
     @PostMapping("/logout")
