@@ -17,4 +17,5 @@ public class Blacklist {
     public boolean isTokenBlacklisted(String token) {
         return blacklist.contains(token);
     }
+
 }
