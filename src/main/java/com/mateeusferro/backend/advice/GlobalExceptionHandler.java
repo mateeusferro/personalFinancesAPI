@@ -1,5 +1,6 @@
 package com.mateeusferro.backend.advice;
 
+import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
 import com.mateeusferro.backend.exceptions.TokenNullException;
 import com.mateeusferro.backend.exceptions.UserAlreadyExistsException;
 import jakarta.validation.ConstraintViolation;
@@ -83,6 +84,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ProblemDetail handleNoResourceFound(NoResourceFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), ex.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         return problemDetail;
     }
 
