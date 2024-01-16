@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
@@ -22,8 +19,15 @@ public class UsersController {
 
     @PostMapping("/create")
     public ResponseEntity createUser(@RequestBody @Valid UsersDTO usersDTO){
-        usersService.create(usersDTO);
+        usersService.createUser(usersDTO);
         ResponseDTO responseDTO = new ResponseDTO("User created", HttpStatus.CREATED);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity updateUser(@PathVariable long id, @RequestBody @Valid UsersDTO usersDTO) {
+        usersService.updateUser(id, usersDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO("User updated",
+                HttpStatus.NO_CONTENT));
     }
 }
