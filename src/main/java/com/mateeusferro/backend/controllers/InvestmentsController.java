@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/investments")
@@ -21,9 +19,16 @@ public class InvestmentsController {
     private InvestmentsService investmentsService;
 
     @PostMapping("/create")
-    public ResponseEntity create(@RequestBody @Valid InvestmentsDTO investmentsDTO){
+    public ResponseEntity createInvestment(@RequestBody @Valid InvestmentsDTO investmentsDTO){
         investmentsService.createInvestment(investmentsDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDTO("Investment created",
                 HttpStatus.CREATED));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity updateInvestment(@PathVariable long id, @RequestBody @Valid InvestmentsDTO investmentsDTO) {
+        investmentsService.updateInvestment(id, investmentsDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO("Investment updated",
+                HttpStatus.NO_CONTENT));
     }
 }
