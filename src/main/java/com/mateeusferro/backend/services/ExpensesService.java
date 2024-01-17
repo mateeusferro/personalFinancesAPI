@@ -2,8 +2,11 @@ package com.mateeusferro.backend.services;
 
 import com.mateeusferro.backend.dtos.ExpensesDTO;
 import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
+import com.mateeusferro.backend.models.BankAccount;
+import com.mateeusferro.backend.models.Currency;
 import com.mateeusferro.backend.models.Expenses;
 import com.mateeusferro.backend.models.Users;
+import com.mateeusferro.backend.repositories.CurrencyRepository;
 import com.mateeusferro.backend.repositories.ExpensesRepository;
 import com.mateeusferro.backend.repositories.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,12 +29,22 @@ public class ExpensesService {
     @Autowired
     UsersRepository usersRepository;
 
+    @Autowired
+    CurrencyRepository currencyRepository;
+
+    public List<Expenses> getExpenses(long id){
+        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Expenses expenses = expensesRepository.findByUsersId(user);
+        return Collections.singletonList(expenses);
+    }
+
     public void createExpense(ExpensesDTO expensesDTO){
         Users user = usersRepository.findById(expensesDTO.usersId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Currency currency = currencyRepository.findById(expensesDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
 
         Expenses expenses = new Expenses(expensesDTO.type(), expensesDTO.date(), expensesDTO.value(),
                                         expensesDTO.paid(), expensesDTO.paidDate(), expensesDTO.paymentType(),
-                user, expensesDTO.currencyId());
+                user, currency);
         expensesRepository.save((expenses));
     }
 
@@ -43,7 +58,9 @@ public class ExpensesService {
         updateExpenses.setPaid(expensesDTO.paid());
         updateExpenses.setPaidDate(expensesDTO.paidDate());
         updateExpenses.setPaymentType(expensesDTO.paymentType());
-        updateExpenses.setCurrencyId(expensesDTO.currencyId());
+        Currency currency = currencyRepository.findById(expensesDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
+
+        updateExpenses.setCurrencyId(currency);
 
         expensesRepository.save(updateExpenses);
     }

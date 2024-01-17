@@ -2,9 +2,8 @@ package com.mateeusferro.backend.services;
 
 import com.mateeusferro.backend.dtos.FinancialGoalDTO;
 import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
-import com.mateeusferro.backend.models.FinancialGoal;
-import com.mateeusferro.backend.models.Investments;
-import com.mateeusferro.backend.models.Users;
+import com.mateeusferro.backend.models.*;
+import com.mateeusferro.backend.repositories.CurrencyRepository;
 import com.mateeusferro.backend.repositories.FinancialGoalRepository;
 import com.mateeusferro.backend.repositories.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,12 +26,22 @@ public class FinancialGoalService {
     @Autowired
     UsersRepository usersRepository;
 
+    @Autowired
+    CurrencyRepository currencyRepository;
+
+    public List<FinancialGoal> getFinancialGoal(long id){
+        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        FinancialGoal financialGoal = financialGoalRepository.findByUsersId(user);
+        return Collections.singletonList(financialGoal);
+    }
+
     public void createFinancialGoal(FinancialGoalDTO financialGoalDTO){
         Users user = usersRepository.findById(financialGoalDTO.usersId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Currency currency = currencyRepository.findById(financialGoalDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
 
         FinancialGoal financialGoal = new FinancialGoal(financialGoalDTO.name(), financialGoalDTO.value(),
                                                         financialGoalDTO.date(), user,
-                                                        financialGoalDTO.currencyId());
+                                                        currency);
         financialGoalRepository.save(financialGoal);
     }
 
@@ -41,7 +52,9 @@ public class FinancialGoalService {
         updateFinancialGoal.setName(financialGoalDTO.name());
         updateFinancialGoal.setValue(financialGoalDTO.value());
         updateFinancialGoal.setDate(financialGoalDTO.date());
-        updateFinancialGoal.setCurrencyId(financialGoalDTO.currencyId());
+        Currency currency = currencyRepository.findById(financialGoalDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
+
+        updateFinancialGoal.setCurrencyId(currency);
 
         financialGoalRepository.save(updateFinancialGoal);
     }

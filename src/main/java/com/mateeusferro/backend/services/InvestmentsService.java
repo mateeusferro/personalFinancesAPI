@@ -2,9 +2,8 @@ package com.mateeusferro.backend.services;
 
 import com.mateeusferro.backend.dtos.InvestmentsDTO;
 import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
-import com.mateeusferro.backend.models.Investments;
-import com.mateeusferro.backend.models.Salary;
-import com.mateeusferro.backend.models.Users;
+import com.mateeusferro.backend.models.*;
+import com.mateeusferro.backend.repositories.CurrencyRepository;
 import com.mateeusferro.backend.repositories.InvestmentsRepository;
 import com.mateeusferro.backend.repositories.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,12 +26,22 @@ public class InvestmentsService {
     @Autowired
     UsersRepository usersRepository;
 
+    @Autowired
+    CurrencyRepository currencyRepository;
+
+    public List<Investments> getInvestments(long id){
+        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Investments account = investmentsRepository.findByUsersId(user);
+        return Collections.singletonList(account);
+    }
+
     public void createInvestment(InvestmentsDTO investmentsDTO){
         Users user = usersRepository.findById(investmentsDTO.usersId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Currency currency = currencyRepository.findById(investmentsDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
 
         Investments investments = new Investments(investmentsDTO.type(), investmentsDTO.value(),
                                                 investmentsDTO.date(), investmentsDTO.description(),
-                user, investmentsDTO.currencyId());
+                user, currency);
         investmentsRepository.save(investments);
     }
 
@@ -42,7 +53,9 @@ public class InvestmentsService {
         updateInvestment.setValue(investmentsDTO.value());
         updateInvestment.setDate(investmentsDTO.date());
         updateInvestment.setDescription(investmentsDTO.description());
-        updateInvestment.setCurrencyId(investmentsDTO.currencyId());
+        Currency currency = currencyRepository.findById(investmentsDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
+
+        updateInvestment.setCurrencyId(currency);
 
         investmentsRepository.save(updateInvestment);
     }

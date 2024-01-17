@@ -2,8 +2,11 @@ package com.mateeusferro.backend.services;
 
 import com.mateeusferro.backend.dtos.SalaryDTO;
 import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
+import com.mateeusferro.backend.models.BankAccount;
+import com.mateeusferro.backend.models.Currency;
 import com.mateeusferro.backend.models.Salary;
 import com.mateeusferro.backend.models.Users;
+import com.mateeusferro.backend.repositories.CurrencyRepository;
 import com.mateeusferro.backend.repositories.SalaryRepository;
 import com.mateeusferro.backend.repositories.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,11 +29,20 @@ public class SalaryService {
     @Autowired
     UsersRepository usersRepository;
 
+    @Autowired
+    CurrencyRepository currencyRepository;
+
+    public List<Salary> getSalary(long id){
+        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Salary salary = salaryRepository.findByUsersId(user);
+        return Collections.singletonList(salary);
+    }
+
     public void createSalary(SalaryDTO salaryDTO){
         Users user = usersRepository.findById(salaryDTO.usersId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
+        Currency currency = currencyRepository.findById(salaryDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
         Salary salary = new Salary(salaryDTO.type(), salaryDTO.value(), salaryDTO.date(),
-                                    salaryDTO.description(), user, salaryDTO.currencyId());
+                                    salaryDTO.description(), user, currency);
         salaryRepository.save(salary);
     }
 
@@ -40,7 +54,9 @@ public class SalaryService {
         updateSalary.setValue(salaryDTO.value());
         updateSalary.setDate(salaryDTO.date());
         updateSalary.setDescription(salaryDTO.description());
-        updateSalary.setCurrencyId(salaryDTO.currencyId());
+        Currency currency = currencyRepository.findById(salaryDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
+
+        updateSalary.setCurrencyId(currency);
 
         salaryRepository.save(updateSalary);
     }
