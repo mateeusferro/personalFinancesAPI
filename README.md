@@ -4,7 +4,7 @@ This repository contains a Spring Boot project for building a comprehensive API 
 
 ## Features
 
-1. **Authentication:** Secure endpoints with user authentication to ensure data privacy.
+1. **Authentication:** Secure endpoints with user authentication using JWT (JSON Web Tokens) to ensure data privacy.
 
 2. **CRUD Operations:** Full implementation of Create, Read, Update, and Delete operations for managing financial data.
 
@@ -15,6 +15,8 @@ This repository contains a Spring Boot project for building a comprehensive API 
 - **Spring Boot:** Provides a robust framework for building and deploying Java-based applications, simplifying the development process.
 
 - **MySQL:** A powerful relational database management system, ensuring data integrity and reliability.
+
+- **JWT (JSON Web Tokens):** Used for secure authentication, generating tokens for users to access protected endpoints.
 
 ## Getting Started
 
