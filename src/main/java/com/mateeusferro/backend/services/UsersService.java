@@ -1,16 +1,19 @@
 package com.mateeusferro.backend.services;
 
-import com.mateeusferro.backend.dtos.SalaryDTO;
 import com.mateeusferro.backend.dtos.UsersDTO;
-import com.mateeusferro.backend.enums.UserRole;
 import com.mateeusferro.backend.exceptions.ResourceNotFoundException;
 import com.mateeusferro.backend.exceptions.UserAlreadyExistsException;
-import com.mateeusferro.backend.models.Salary;
 import com.mateeusferro.backend.models.Users;
 import com.mateeusferro.backend.repositories.UsersRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -40,4 +43,29 @@ public class UsersService {
 
         usersRepository.save(updateUsers);
     }
+
+    @Transactional
+    public void partialUpdateUsers(long id, Map<String, Object> updates) {
+        Optional<Users> user = usersRepository.findById(id);
+        if (user.isPresent()) {
+            updates.forEach((key, value) -> {
+                Field field = ReflectionUtils.findField(Users.class, (String) key);
+
+                if (field != null) {
+                    field.setAccessible(true);
+                    ReflectionUtils.setField(field, user, value);
+                } else {
+                    throw new IllegalArgumentException("Field not found: " + key);
+                }
+
+            });
+            usersRepository.save(user.get());
+        }
+    }
+
+    public void deleteUsers(long id) {
+        Users user = usersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        usersRepository.delete(user);
+    }
+
 }
