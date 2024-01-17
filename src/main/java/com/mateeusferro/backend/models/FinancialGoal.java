@@ -36,9 +36,9 @@ public class FinancialGoal {
     @Column(name = "date")
     private Date date;
 
-    @NotNull(message = "User ID cannot be null")
-    @Column(name = "users_id")
-    private Long usersId;
+    @ManyToOne
+    @JoinColumn(name = "users_id", nullable = false)
+    private Users usersId;
 
     @NotNull(message = "Currency ID cannot be null")
     @Column(name = "currency_id")
@@ -46,7 +46,7 @@ public class FinancialGoal {
 
     @AssertTrue(message = "User ID must be greater than 0")
     private boolean isUserIdValid() {
-        return usersId != null && usersId > 0;
+        return usersId != null && usersId.getId() > 0;
     }
 
     @AssertTrue(message = "Currency ID must be greater than 0")
@@ -54,7 +54,7 @@ public class FinancialGoal {
         return currencyId != null && currencyId > 0;
     }
 
-    public FinancialGoal(String name, Double value, Date date, Long usersId, Long currencyId) {
+    public FinancialGoal(String name, Double value, Date date, Users usersId, Long currencyId) {
         this.name = name;
         this.value = value;
         this.date = date;

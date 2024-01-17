@@ -41,9 +41,9 @@ public class Investments {
     @Column(name = "description")
     private String description;
 
-    @NotNull(message = "User ID cannot be null")
-    @Column(name = "users_id")
-    private Long usersId;
+    @ManyToOne
+    @JoinColumn(name = "users_id", nullable = false)
+    private Users usersId;
 
     @NotNull(message = "Currency ID cannot be null")
     @Column(name = "currency_id")
@@ -51,7 +51,7 @@ public class Investments {
 
     @AssertTrue(message = "User ID must be greater than 0")
     private boolean isUserIdValid() {
-        return usersId != null && usersId > 0;
+        return usersId != null && usersId.getId() > 0;
     }
 
     @AssertTrue(message = "Currency ID must be greater than 0")
@@ -60,7 +60,7 @@ public class Investments {
     }
 
     public Investments(String type, Double value, Date date, String description,
-                       Long usersId, Long currencyId) {
+                       Users usersId, Long currencyId) {
         this.type = type;
         this.value = value;
         this.date = date;

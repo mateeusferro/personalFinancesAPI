@@ -44,6 +44,21 @@ public class Users implements UserDetails {
     @Column(name = "is_admin")
     private String isAdmin;
 
+    @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<BankAccount> bankAccounts;
+
+    @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Expenses> expenses;
+
+    @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<FinancialGoal> financialGoals;
+
+    @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Investments> investments;
+
+    @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Salary> salary;
+
     public Users(String name, String email, String password, String isAdmin) {
         this.name = name;
         this.email = email;
