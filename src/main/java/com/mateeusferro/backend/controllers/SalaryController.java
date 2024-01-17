@@ -2,7 +2,9 @@ package com.mateeusferro.backend.controllers;
 
 import com.mateeusferro.backend.dtos.InvestmentsDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.ResponseObjectDTO;
 import com.mateeusferro.backend.dtos.SalaryDTO;
+import com.mateeusferro.backend.models.Salary;
 import com.mateeusferro.backend.services.SalaryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,6 +22,13 @@ public class SalaryController {
 
     @Autowired
     private SalaryService salaryService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity getSalary(@PathVariable long userId){
+        List<Salary> salary = salaryService.getSalary(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectDTO("Found salary for this user",
+                salary, HttpStatus.OK));
+    }
 
     @PostMapping("/create")
     public ResponseEntity createSalary(@RequestBody @Valid SalaryDTO salaryDTO){

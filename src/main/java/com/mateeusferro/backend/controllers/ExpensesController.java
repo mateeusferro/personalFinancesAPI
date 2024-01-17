@@ -1,8 +1,9 @@
 package com.mateeusferro.backend.controllers;
 
-import com.mateeusferro.backend.dtos.BankAccountDTO;
 import com.mateeusferro.backend.dtos.ExpensesDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.ResponseObjectDTO;
+import com.mateeusferro.backend.models.Expenses;
 import com.mateeusferro.backend.services.ExpensesService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,6 +21,13 @@ public class ExpensesController {
 
     @Autowired
     ExpensesService expensesService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity getExpenses(@PathVariable long userId){
+        List<Expenses> expenses = expensesService.getExpenses(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectDTO("Found expenses for this user",
+                expenses, HttpStatus.OK));
+    }
 
     @PostMapping("/create")
     public ResponseEntity createExpense(@RequestBody @Valid ExpensesDTO expensesDTO){

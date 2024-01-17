@@ -3,6 +3,8 @@ package com.mateeusferro.backend.controllers;
 import com.mateeusferro.backend.dtos.FinancialGoalDTO;
 import com.mateeusferro.backend.dtos.InvestmentsDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.ResponseObjectDTO;
+import com.mateeusferro.backend.models.Investments;
 import com.mateeusferro.backend.services.FinancialGoalService;
 import com.mateeusferro.backend.services.InvestmentsService;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,6 +22,13 @@ import java.util.Map;
 public class InvestmentsController {
     @Autowired
     private InvestmentsService investmentsService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity getInvestments(@PathVariable long userId){
+        List<Investments> investments = investmentsService.getInvestments(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectDTO("Found investment for this user",
+                investments, HttpStatus.OK));
+    }
 
     @PostMapping("/create")
     public ResponseEntity createInvestment(@RequestBody @Valid InvestmentsDTO investmentsDTO){

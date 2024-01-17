@@ -2,6 +2,7 @@ package com.mateeusferro.backend.controllers;
 
 import com.mateeusferro.backend.dtos.BankAccountDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.ResponseObjectDTO;
 import com.mateeusferro.backend.models.BankAccount;
 import com.mateeusferro.backend.services.BankAccountService;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,6 +21,14 @@ public class BankAccountController {
 
     @Autowired
     private BankAccountService bankAccountService;
+
+
+    @GetMapping("/{userId}")
+    public ResponseEntity getBankAccount(@PathVariable long userId){
+        List<BankAccount> bankAccount = bankAccountService.getBankAccount(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectDTO("Found bank account for this user",
+                bankAccount, HttpStatus.OK));
+    }
 
     @PostMapping("/create")
     public ResponseEntity createBank(@RequestBody @Valid BankAccountDTO bankAccountDTO){

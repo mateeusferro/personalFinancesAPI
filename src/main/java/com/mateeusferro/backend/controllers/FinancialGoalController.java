@@ -2,6 +2,9 @@ package com.mateeusferro.backend.controllers;
 
 import com.mateeusferro.backend.dtos.FinancialGoalDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
+import com.mateeusferro.backend.dtos.ResponseObjectDTO;
+import com.mateeusferro.backend.models.BankAccount;
+import com.mateeusferro.backend.models.FinancialGoal;
 import com.mateeusferro.backend.services.FinancialGoalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,6 +23,12 @@ public class FinancialGoalController {
     @Autowired
     private FinancialGoalService financialGoalService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity getFinancialGoal(@PathVariable long userId){
+        List<FinancialGoal> financialGoal = financialGoalService.getFinancialGoal(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObjectDTO("Found financial goal for this user",
+                financialGoal, HttpStatus.OK));
+    }
     @PostMapping("/create")
     public ResponseEntity createFinancialGoal(@RequestBody @Valid FinancialGoalDTO financialGoalDTO){
         financialGoalService.createFinancialGoal(financialGoalDTO);
