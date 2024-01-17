@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/bankAccount")
 public class BankAccountController {
@@ -28,7 +30,21 @@ public class BankAccountController {
     @PutMapping("/update/{id}")
     public ResponseEntity updateEmployee(@PathVariable long id, @RequestBody @Valid BankAccountDTO bankAccountDTO) {
         bankAccountService.updateBankAccount(id, bankAccountDTO);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO("Bank account updated",
-                HttpStatus.NO_CONTENT));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Bank account updated",
+                HttpStatus.OK));
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity partialUpdateBankAccount(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        bankAccountService.partialUpdateBankAccount(id, updates);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Bank account partially updated",
+                HttpStatus.OK));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deleteBankAccount(@PathVariable long id) {
+        bankAccountService.deleteBankAccount(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Bank account deleted",
+                HttpStatus.OK));
     }
 }

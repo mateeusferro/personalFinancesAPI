@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/investments")
 public class InvestmentsController {
@@ -28,7 +30,21 @@ public class InvestmentsController {
     @PutMapping("/update/{id}")
     public ResponseEntity updateInvestment(@PathVariable long id, @RequestBody @Valid InvestmentsDTO investmentsDTO) {
         investmentsService.updateInvestment(id, investmentsDTO);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO("Investment updated",
-                HttpStatus.NO_CONTENT));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Investment updated",
+                HttpStatus.OK));
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity partialUpdateInvestments(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        investmentsService.partialUpdateInvestments(id, updates);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Investment partially updated",
+                HttpStatus.OK));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deleteInvestments(@PathVariable long id) {
+        investmentsService.deleteInvestments(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Investment deleted",
+                HttpStatus.OK));
     }
 }

@@ -1,6 +1,5 @@
 package com.mateeusferro.backend.controllers;
 
-import com.mateeusferro.backend.dtos.ExpensesDTO;
 import com.mateeusferro.backend.dtos.FinancialGoalDTO;
 import com.mateeusferro.backend.dtos.ResponseDTO;
 import com.mateeusferro.backend.services.FinancialGoalService;
@@ -10,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/financialGoal")
@@ -29,7 +30,21 @@ public class FinancialGoalController {
     public ResponseEntity updateFinancialGoal(@PathVariable long id, @RequestBody @Valid FinancialGoalDTO
             financialGoalDTO) {
         financialGoalService.updateFinancialGoal(id, financialGoalDTO);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseDTO("Financial goal updated",
-                HttpStatus.NO_CONTENT));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Financial goal updated",
+                HttpStatus.OK));
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity partialUpdateFinancialGoal(@PathVariable long id, @RequestBody Map<String, Object> updates) {
+        financialGoalService.partialUpdateFinancialGoal(id, updates);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Financial goal partially updated",
+                HttpStatus.OK));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deleteFinancialGoal(@PathVariable long id) {
+        financialGoalService.deleteFinancialGoal(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDTO("Financial goal deleted",
+                HttpStatus.OK));
     }
 }
