@@ -31,9 +31,9 @@ public class BankAccount {
     @JoinColumn(name = "users_id", nullable = false)
     private Users usersId;
 
-    @NotNull(message = "Currency ID cannot be null")
-    @Column(name = "currency_id")
-    private Long currencyId;
+    @ManyToOne
+    @JoinColumn(name = "currency_id", nullable = false)
+    private Currency currencyId;
 
     @AssertTrue(message = "User ID must be greater than 0")
     private boolean isUserIdValid() {
@@ -42,10 +42,10 @@ public class BankAccount {
 
     @AssertTrue(message = "Currency ID must be greater than 0")
     private boolean isCurrencyIdValid() {
-        return currencyId != null && currencyId > 0;
+        return currencyId != null && currencyId.getId() > 0;
     }
 
-    public BankAccount(String name, Double balance, Users usersId, Long currencyId) {
+    public BankAccount(String name, Double balance, Users usersId, Currency currencyId) {
         this.name = name;
         this.balance = balance;
         this.usersId = usersId;
