@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "expenses")
@@ -30,19 +30,21 @@ public class Expenses {
 
     @NotNull(message = "Date cannot be null")
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @NotNull(message = "Value cannot be null")
     @Column(name = "value")
     private Double value;
 
-    @NotNull(message = "Paid cannot be null")
+    @Size(max = 200, message = "Description must be max of 200 characters")
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "paid")
     private Double paid;
 
-    @NotNull(message = "Paid date cannot be null")
     @Column(name = "paid_date")
-    private Date paidDate;
+    private LocalDate paidDate;
 
     @NotBlank(message = "Payment type cannot be null")
     @Size(min = 2, max = 90, message = "Payment type must be between 2 and 45 characters")
@@ -68,11 +70,12 @@ public class Expenses {
         return currencyId != null && currencyId.getId() > 0;
     }
 
-    public Expenses(String type, Date date, Double value, Double paid, Date paidDate, String paymentType,
+    public Expenses(String type, LocalDate date, String description, Double value, Double paid, LocalDate paidDate, String paymentType,
                     Users usersId, Currency currencyId) {
         this.type = type;
         this.date = date;
         this.value = value;
+        this.description = description;
         this.paid = paid;
         this.paidDate = paidDate;
         this.paymentType = paymentType;

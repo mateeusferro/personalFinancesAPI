@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "financial_goal")
@@ -34,7 +34,7 @@ public class FinancialGoal {
 
     @NotNull(message = "Date cannot be null")
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
@@ -54,7 +54,7 @@ public class FinancialGoal {
         return currencyId != null && currencyId.getId() > 0;
     }
 
-    public FinancialGoal(String name, Double value, Date date, Users usersId, Currency currencyId) {
+    public FinancialGoal(String name, Double value, LocalDate date, Users usersId, Currency currencyId) {
         this.name = name;
         this.value = value;
         this.date = date;

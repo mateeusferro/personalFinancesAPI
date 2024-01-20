@@ -1,5 +1,6 @@
 package com.mateeusferro.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mateeusferro.backend.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -44,18 +45,23 @@ public class Users implements UserDetails {
     @Column(name = "is_admin")
     private String isAdmin;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<BankAccount> bankAccounts;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Expenses> expenses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<FinancialGoal> financialGoals;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Investments> investments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "usersId", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Salary> salary;
 

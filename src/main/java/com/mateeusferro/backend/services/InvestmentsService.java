@@ -62,10 +62,11 @@ public class InvestmentsService {
 
     @Transactional
     public void partialUpdateInvestments(long id, Map<String, Object> updates) {
-        Optional<Investments> investments = investmentsRepository.findById(id);
-        if (investments.isPresent()) {
+        Optional<Investments> optionalInvestments = investmentsRepository.findById(id);
+        if (optionalInvestments.isPresent()) {
+            Investments investments = optionalInvestments.get();
             updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(Investments.class, (String) key);
+                Field field = ReflectionUtils.findField(Investments.class, key);
 
                 if (field != null) {
                     field.setAccessible(true);
@@ -73,9 +74,8 @@ public class InvestmentsService {
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            investmentsRepository.save(investments.get());
+            investmentsRepository.save(investments);
         }
     }
 

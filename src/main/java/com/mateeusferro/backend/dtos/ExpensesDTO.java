@@ -1,7 +1,7 @@
 package com.mateeusferro.backend.dtos;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
-public record ExpensesDTO(String type, Date date, Double value, Double paid, Date paidDate, String paymentType,
-                          Long usersId, Long currencyId) {
+public record ExpensesDTO(String type, LocalDate date, Double value, Double paid, LocalDate paidDate, String paymentType,
+                          String description, Long usersId, Long currencyId) {
 }

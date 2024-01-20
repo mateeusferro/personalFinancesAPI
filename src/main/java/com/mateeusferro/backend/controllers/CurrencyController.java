@@ -19,7 +19,7 @@ public class CurrencyController {
     @Autowired
     CurrencyService currencyService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity getCurrency(){
         List<Currency> currency = currencyService.getCurrency();
 

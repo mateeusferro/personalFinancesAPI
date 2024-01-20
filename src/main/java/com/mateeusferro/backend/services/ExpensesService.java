@@ -42,7 +42,7 @@ public class ExpensesService {
         Users user = usersRepository.findById(expensesDTO.usersId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Currency currency = currencyRepository.findById(expensesDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
 
-        Expenses expenses = new Expenses(expensesDTO.type(), expensesDTO.date(), expensesDTO.value(),
+        Expenses expenses = new Expenses(expensesDTO.type(), expensesDTO.date(), expensesDTO.description(), expensesDTO.value(),
                                         expensesDTO.paid(), expensesDTO.paidDate(), expensesDTO.paymentType(),
                 user, currency);
         expensesRepository.save((expenses));
@@ -56,6 +56,7 @@ public class ExpensesService {
         updateExpenses.setDate(expensesDTO.date());
         updateExpenses.setValue(expensesDTO.value());
         updateExpenses.setPaid(expensesDTO.paid());
+        updateExpenses.setDescription(expensesDTO.description());
         updateExpenses.setPaidDate(expensesDTO.paidDate());
         updateExpenses.setPaymentType(expensesDTO.paymentType());
         Currency currency = currencyRepository.findById(expensesDTO.currencyId()).orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
@@ -67,10 +68,11 @@ public class ExpensesService {
 
     @Transactional
     public void partialUpdateExpense(long id, Map<String, Object> updates) {
-        Optional<Expenses> expenses = expensesRepository.findById(id);
-        if (expenses.isPresent()) {
+        Optional<Expenses> optionalExpenses = expensesRepository.findById(id);
+        if (optionalExpenses.isPresent()) {
+            Expenses expenses = optionalExpenses.get();
             updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(Expenses.class, (String) key);
+                Field field = ReflectionUtils.findField(Expenses.class, key);
 
                 if (field != null) {
                     field.setAccessible(true);
@@ -78,11 +80,11 @@ public class ExpensesService {
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            expensesRepository.save(expenses.get());
+            expensesRepository.save(expenses);
         }
     }
+
 
     public void deleteExpense(long id) {
         Expenses expenses = expensesRepository.findById(id).orElseThrow(() ->

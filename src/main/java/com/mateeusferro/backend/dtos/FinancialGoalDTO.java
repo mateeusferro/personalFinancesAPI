@@ -1,6 +1,6 @@
 package com.mateeusferro.backend.dtos;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
-public record FinancialGoalDTO(String name, Double value, Date date, Long usersId, Long currencyId) {
+public record FinancialGoalDTO(String name, Double value, LocalDate date, Long usersId, Long currencyId) {
 }

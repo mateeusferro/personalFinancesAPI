@@ -61,10 +61,11 @@ public class FinancialGoalService {
 
     @Transactional
     public void partialUpdateFinancialGoal(long id, Map<String, Object> updates) {
-        Optional<FinancialGoal> financialGoal = financialGoalRepository.findById(id);
-        if (financialGoal.isPresent()) {
+        Optional<FinancialGoal> optionalFinancialGoal = financialGoalRepository.findById(id);
+        if (optionalFinancialGoal.isPresent()) {
+            FinancialGoal financialGoal = optionalFinancialGoal.get();
             updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(FinancialGoal.class, (String) key);
+                Field field = ReflectionUtils.findField(FinancialGoal.class, key);
 
                 if (field != null) {
                     field.setAccessible(true);
@@ -72,9 +73,8 @@ public class FinancialGoalService {
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            financialGoalRepository.save(financialGoal.get());
+            financialGoalRepository.save(financialGoal);
         }
     }
 

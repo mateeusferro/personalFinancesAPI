@@ -63,20 +63,19 @@ public class BankAccountService {
 
     @Transactional
     public void partialUpdateBankAccount(long id, Map<String, Object> updates) {
-        Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
-        if (bankAccount.isPresent()) {
+        Optional<BankAccount> optionalBankAccount = bankAccountRepository.findById(id);
+        if (optionalBankAccount.isPresent()) {
+            BankAccount bankAccount = optionalBankAccount.get();
             updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(BankAccount.class, (String) key);
-
+                Field field = ReflectionUtils.findField(BankAccount.class, key);
                 if (field != null) {
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, bankAccount, value);
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            bankAccountRepository.save(bankAccount.get());
+            bankAccountRepository.save(bankAccount);
         }
     }
 

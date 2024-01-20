@@ -46,20 +46,23 @@ public class UsersService {
 
     @Transactional
     public void partialUpdateUsers(long id, Map<String, Object> updates) {
-        Optional<Users> user = usersRepository.findById(id);
-        if (user.isPresent()) {
+        Optional<Users> optionalUser = usersRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            Users user = optionalUser.get();
             updates.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(Users.class, (String) key);
+                Field field = ReflectionUtils.findField(Users.class, key);
 
-                if (field != null) {
+                if ("password".equals(key)) {
+                    String encryptedPassword = new BCryptPasswordEncoder().encode((String) value);
+                    user.setPassword(encryptedPassword);
+                } else if (field != null) {
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, user, value);
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            usersRepository.save(user.get());
+            usersRepository.save(user);
         }
     }
 

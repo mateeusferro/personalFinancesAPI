@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "investments")
@@ -34,10 +34,9 @@ public class Investments {
 
     @NotNull(message = "Date cannot be null")
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
-    @NotBlank(message = "Description cannot be blank")
-    @Size(min = 2, max = 200, message = "Description must be between 2 and 200 characters")
+    @Size(max = 200, message = "Description must be max of 200 characters")
     @Column(name = "description")
     private String description;
 
@@ -59,7 +58,7 @@ public class Investments {
         return currencyId != null && currencyId.getId() > 0;
     }
 
-    public Investments(String type, Double value, Date date, String description,
+    public Investments(String type, Double value, LocalDate date, String description,
                        Users usersId, Currency currencyId) {
         this.type = type;
         this.value = value;

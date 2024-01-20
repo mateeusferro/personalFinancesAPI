@@ -63,10 +63,11 @@ public class SalaryService {
 
     @Transactional
     public void partialUpdateSalary(long id, Map<String, Object> updates) {
-        Optional<Salary> salary = salaryRepository.findById(id);
-        if (salary.isPresent()) {
-            updates.forEach((key, value) ->{
-               Field field = ReflectionUtils.findField(Salary.class, (String) key);
+        Optional<Salary> optionalSalary = salaryRepository.findById(id);
+        if (optionalSalary.isPresent()) {
+            Salary salary = optionalSalary.get();
+            updates.forEach((key, value) -> {
+                Field field = ReflectionUtils.findField(Salary.class, key);
 
                 if (field != null) {
                     field.setAccessible(true);
@@ -74,9 +75,8 @@ public class SalaryService {
                 } else {
                     throw new IllegalArgumentException("Field not found: " + key);
                 }
-
             });
-            salaryRepository.save(salary.get());
+            salaryRepository.save(salary);
         }
     }
 
