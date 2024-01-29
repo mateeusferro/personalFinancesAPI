@@ -42,7 +42,7 @@ public class AuthenticationController {
 
         var token = tokenService.generateTokens((Users) auth.getPrincipal());
         return ResponseEntity.status(HttpStatus.OK).
-                body(new LoginResponseDTO("You're logged", token.accessToken(),
+                body(new LoginResponseDTO("You're logged", ((Users) auth.getPrincipal()).getId(), token.accessToken(),
                         token.refreshToken(), HttpStatus.OK));
     }
 
@@ -59,7 +59,7 @@ public class AuthenticationController {
                 blacklist.addToBlacklist(token);
                 blacklist.addToBlacklist(refreshTokenDTO.refreshToken());
                 return ResponseEntity.status(HttpStatus.OK).
-                        body(new LoginResponseDTO("You're logged again", accessToken.accessToken(),
+                        body(new LoginResponseDTO("You're logged again", 0l, accessToken.accessToken(),
                                 accessToken.refreshToken(), HttpStatus.OK));
             }
         }

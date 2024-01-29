@@ -86,7 +86,6 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("personalFinancesAPI")
                     .withClaim("email", user.getEmail())
-                    .withClaim("id", user.getId())
                     .withExpiresAt(genExpirationTime())
                     .sign(algorithm);
         } catch (JWTCreationException ex) {
